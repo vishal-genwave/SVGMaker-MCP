@@ -1,81 +1,89 @@
 # SVGMaker MCP Server
 
-A Model Context Protocol (MCP) server for SVGMaker that allows AI assistants to generate SVGs directly from your code editor.
+A Model Context Protocol (MCP) server for generating SVGs using AI.
 
-## Features
+## Current Status
 
-- Generate SVGs from text descriptions
-- Support for different quality levels
-- Customizable aspect ratios and backgrounds
-- Style parameter customization
-- Secure API key authentication
+✅ MCP Server is working and tools are registered
+✅ API integration is working
+✅ Authentication is working
+❌ Tools not showing in Cursor UI (known issue)
 
-## Installation
+## Setup
+
+1. **Install Dependencies**
+```bash
+npm install
+```
+
+2. **Build the Project**
+```bash
+npm run build
+```
+
+3. **Start the Server**
+```bash
+npm start
+```
+
+## Testing the MCP Server
+
+You can test if the MCP server and tools are working using the MCP CLI:
 
 ```bash
-npm install @genwave/svgmaker-mcp
+npx fastmcp dev src/index.ts
 ```
+
+This will show you the available tools and let you test them directly.
+
+## Known Issues
+
+1. **Tools not showing in Cursor UI**
+   - The MCP server is running correctly
+   - Tools are registered and working (verified via MCP CLI)
+   - But tools are not showing up in Cursor's UI
+   - Current workaround: Use MCP CLI for testing
+
+2. **TypeScript Error in generate.ts**
+   - There's a type inference issue with the params parameter
+   - This doesn't affect functionality but needs to be fixed
 
 ## Configuration
 
-Create a configuration file at `~/.cursor/mcp.json`:
+The MCP server is configured in `~/.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "svgmaker": {
-      "command": "npx",
-      "args": ["-y", "@genwave/svgmaker-mcp"],
+      "command": "npm",
+      "args": ["start"],
+      "cwd": "/Users/vishalm.a/Desktop/MCP/SVGMaker-MCP",
       "env": {
-        "SVGMAKER_API_KEY": "<your_api_key>"
+        "SVGMAKER_API_KEY": "svgmaker-io33a05fb1e5616064"
       }
     }
   }
 }
 ```
 
-## Usage
+## API Integration
 
-In your code editor (e.g., Cursor), you can use the MCP server by adding `use svgmaker` to your prompt:
+The MCP server integrates with your local API server running on port 3000. Make sure:
+1. Your API server is running
+2. The API key is correctly set in the MCP configuration
+3. The API endpoint is accessible at `http://localhost:3000/api/generate`
 
-```
-use svgmaker
+## Next Steps
 
-Generate a simple house icon with a transparent background
-```
+1. Fix the TypeScript error in `generate.ts`
+2. Investigate why tools aren't showing in Cursor UI
+3. Add more tools and features
+4. Improve error handling and logging
 
-## API Reference
+## Contributing
 
-### Generate SVG
-
-Parameters:
-- `prompt` (string): Text description of the SVG to generate
-- `quality` (enum): 'low' | 'medium' | 'high'
-- `aspectRatio` (enum): 'auto' | 'portrait' | 'landscape' | 'square' | 'wide' | 'tall'
-- `background` (enum): 'auto' | 'transparent' | 'opaque'
-- `styleParams` (object, optional): Additional style parameters
-
-## Development
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Build the project:
-```bash
-npm run build
-```
-
-3. Start the server:
-```bash
-npm start
-```
-
-For development with auto-reload:
-```bash
-npm run dev
-```
+Feel free to open issues or submit pull requests to help improve the project.
 
 ## License
 
