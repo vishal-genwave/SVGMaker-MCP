@@ -6,6 +6,7 @@ const generateSchema = z.object({
   quality: z.enum(['low', 'medium', 'high']).default('medium').describe("Quality level of the generated SVG"),
   aspectRatio: z.enum(['auto', 'portrait', 'landscape', 'square', 'wide', 'tall']).default('auto').describe("Aspect ratio of the generated SVG"),
   background: z.enum(['auto', 'transparent', 'opaque']).default('auto').describe("Background type of the generated SVG"),
+  apiKey: z.string().describe("Your SVGMaker API key"),
   styleParams: z.record(z.any()).optional().describe("Additional style parameters for the SVG")
 });
 
@@ -15,34 +16,33 @@ export const generateTool = {
   name: "generate-svg",
   description: "Generate an SVG from a text description using AI",
   parameters: generateSchema,
-  // In src/tools/generate.ts
-execute: async (params: GenerateParams) => {  // This is correct
-  try {
-    const response = await fetch('http://localhost:3000/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': 'svgmaker-io33a05fb1e5616064'
-      },
-      body: JSON.stringify({
-        prompt: params.prompt,
-        quality: params.quality,
-        aspectRatio: params.aspectRatio,
-        background: params.background,
-        ...params.styleParams
-      })
-    });
+  execute: async (params: GenerateParams) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': params.apiKey
+        },
+        body: JSON.stringify({
+          prompt: params.prompt,
+          quality: params.quality,
+          aspectRatio: params.aspectRatio,
+          background: params.background,
+          ...params.styleParams
+        })
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || `Failed to generate SVG: ${response.statusText}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Failed to generate SVG: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result.svgUrl || result.svg;
+    } catch (error) {
+      console.error('SVG generation error:', error);
+      throw error;
     }
-
-    const result = await response.json();
-    return result.svgUrl || result.svg;
-  } catch (error) {
-    console.error('SVG generation error:', error);
-    throw error;
   }
-}
 };
