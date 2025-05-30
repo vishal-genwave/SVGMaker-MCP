@@ -1,23 +1,16 @@
-import { FastMCP } from "fastmcp";
-import startServer from "./server/server.js";
+import { FastMCP } from 'fastmcp';
+import { generateTool } from './tools/generate.js';
+console.log("Loaded tool:", generateTool.name);
 
-// Start the server
-async function main() {
-  try {
-    const server = await startServer();
-    
-    server.start({
-      transportType: "stdio",
-    });
-    
-    console.error("MCP Server running on stdio");
-  } catch (error) {
-    console.error("Error starting MCP server:", error);
-    process.exit(1);
-  }
-}
 
-main().catch((error) => {
-  console.error("Fatal error in main():", error);
-  process.exit(1);
-}); 
+const server = new FastMCP({
+  name: 'svgmaker-mcp',
+  version: '1.0.0',
+});
+
+server.addTool(generateTool);
+
+
+server.start({
+  transportType: "stdio"
+});
